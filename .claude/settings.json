@@ -1,0 +1,16 @@
+{
+    "permissions": {
+        "allow": [
+            "Bash(vendor/bin/pest *)",
+            "Bash(./vendor/bin/pest *)",
+            "Bash(vendor/bin/rector *)",
+            "Bash(./vendor/bin/rector *)",
+            "Bash(vendor/bin/ecs *)",
+            "Bash(./vendor/bin/ecs *)"
+        ],
+        "ask": [
+            "Bash(composer require *)",
+            "Bash(composer req *)"
+        ]
+    }
+}

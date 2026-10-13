@@ -1,0 +1,32 @@
+{
+    "name": "thedomeffm/email-canonicalizer",
+    "description": "Canonicalize public email service provider addresses",
+    "keywords": ["email", "canonical", "gmail", "googlemail"],
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.3"
+    },
+    "require-dev": {
+        "pestphp/pest": "^4.7.8",
+        "rector/rector": "^2.7",
+        "symplify/easy-coding-standard": "^13.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "TheDomeFfm\\EmailCanonicalizer\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "lock": false,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
