@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace TheDomeFfm\EmailCanonicalizer\Provider;
 
-use TheDomeFfm\EmailCanonicalizer\Rule\CharacterRule;
-use TheDomeFfm\EmailCanonicalizer\Rule\LocalPartRuleInterface;
+use TheDomeFfm\EmailCanonicalizer\Matcher\DomainMatcherInterface;
+use TheDomeFfm\EmailCanonicalizer\Matcher\ExactDomainMatcher;
+use TheDomeFfm\EmailCanonicalizer\Rule\RemoveCharactersRule;
+use TheDomeFfm\EmailCanonicalizer\Rule\RewriteDomainRule;
+use TheDomeFfm\EmailCanonicalizer\Rule\RuleInterface;
 use TheDomeFfm\EmailCanonicalizer\Rule\SubaddressRule;
 
 /**
@@ -15,28 +18,23 @@ use TheDomeFfm\EmailCanonicalizer\Rule\SubaddressRule;
  *
  * @see docs/providers.md#gmail
  */
-final class GmailProvider extends AbstractProvider
+final readonly class GmailProvider implements ProviderInterface
 {
     public function name(): string
     {
         return 'gmail';
     }
 
-    protected function primaryDomain(): string
+    public function domainMatcher(): DomainMatcherInterface
     {
-        return 'gmail.com';
-    }
-
-    protected function aliasDomains(): array
-    {
-        return ['googlemail.com'];
+        return new ExactDomainMatcher('gmail.com', 'googlemail.com');
     }
 
     /**
-     * @return list<LocalPartRuleInterface>
+     * @return list<RuleInterface>
      */
-    protected function rules(): array
+    public function rules(): array
     {
-        return [new SubaddressRule('+'), new CharacterRule(remove: ['.'])];
+        return [new SubaddressRule('+'), new RemoveCharactersRule('.'), new RewriteDomainRule('gmail.com', ['googlemail.com'])];
     }
 }

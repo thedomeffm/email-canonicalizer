@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace TheDomeFfm\EmailCanonicalizer\Provider;
 
-use TheDomeFfm\EmailCanonicalizer\Rule\LocalPartRuleInterface;
+use TheDomeFfm\EmailCanonicalizer\Matcher\DomainMatcherInterface;
+use TheDomeFfm\EmailCanonicalizer\Matcher\ExactDomainMatcher;
+use TheDomeFfm\EmailCanonicalizer\Rule\RewriteDomainRule;
+use TheDomeFfm\EmailCanonicalizer\Rule\RuleInterface;
 use TheDomeFfm\EmailCanonicalizer\Rule\SubaddressRule;
 
 /**
@@ -14,28 +17,23 @@ use TheDomeFfm\EmailCanonicalizer\Rule\SubaddressRule;
  *
  * @see docs/providers.md#yandex
  */
-final class YandexProvider extends AbstractProvider
+final readonly class YandexProvider implements ProviderInterface
 {
     public function name(): string
     {
         return 'yandex';
     }
 
-    protected function primaryDomain(): string
+    public function domainMatcher(): DomainMatcherInterface
     {
-        return 'yandex.com';
-    }
-
-    protected function aliasDomains(): array
-    {
-        return ['yandex.ru', 'yandex.by', 'yandex.kz', 'ya.ru'];
+        return new ExactDomainMatcher('yandex.com', 'yandex.ru', 'yandex.by', 'yandex.kz', 'ya.ru');
     }
 
     /**
-     * @return list<LocalPartRuleInterface>
+     * @return list<RuleInterface>
      */
-    protected function rules(): array
+    public function rules(): array
     {
-        return [new SubaddressRule('+')];
+        return [new SubaddressRule('+'), new RewriteDomainRule('yandex.com', ['yandex.ru', 'yandex.by', 'yandex.kz', 'ya.ru'])];
     }
 }

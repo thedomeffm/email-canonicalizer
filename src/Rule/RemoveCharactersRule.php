@@ -5,33 +5,33 @@ declare(strict_types=1);
 namespace TheDomeFfm\EmailCanonicalizer\Rule;
 
 use InvalidArgumentException;
+use TheDomeFfm\EmailCanonicalizer\EmailAddress;
 
 /**
- * Replaces characters first, then removes characters, e.g. ignoring dots like Gmail does.
+ * Removes characters from the local part, e.g. ignoring dots like Gmail does.
  */
-final readonly class CharacterRule implements LocalPartRuleInterface
+final readonly class RemoveCharactersRule implements RuleInterface
 {
     /**
-     * @param list<string> $remove
-     * @param array<string, string> $replace
+     * @var list<string>
      */
-    public function __construct(
-        private array $remove = [],
-        private array $replace = [],
-    ) {
-        if (in_array('', $remove, true)) {
+    private array $characters;
+
+    public function __construct(string ...$characters)
+    {
+        if ($characters === []) {
+            throw new InvalidArgumentException('At least one character to remove is required.');
+        }
+
+        if (in_array('', $characters, true)) {
             throw new InvalidArgumentException('Characters to remove must not be empty.');
         }
 
-        foreach (array_keys($replace) as $search) {
-            if ((string) $search === '') {
-                throw new InvalidArgumentException('Characters to replace must not be empty.');
-            }
-        }
+        $this->characters = array_values($characters);
     }
 
-    public function apply(string $localPart): string
+    public function apply(EmailAddress $emailAddress): EmailAddress
     {
-        return str_replace($this->remove, '', strtr($localPart, $this->replace));
+        return new EmailAddress(str_replace($this->characters, '', $emailAddress->localPart), $emailAddress->domain);
     }
 }

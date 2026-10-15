@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Tests\Fixtures;
 
 use ReflectionClass;
+use TheDomeFfm\EmailCanonicalizer\Provider\GenericProvider;
 use TheDomeFfm\EmailCanonicalizer\Provider\ProviderInterface;
 
 final class ProviderClasses
 {
     /**
-     * Every instantiable provider class in src/Provider/.
+     * Every built-in provider class in src/Provider/, without the generic GenericProvider.
      *
      * @return list<ReflectionClass<ProviderInterface>>
      */
@@ -22,7 +23,9 @@ final class ProviderClasses
             $className = 'TheDomeFfm\\EmailCanonicalizer\\Provider\\' . basename($file, '.php');
             $reflectionClass = new ReflectionClass($className);
 
-            if ($reflectionClass->isInstantiable() && $reflectionClass->implementsInterface(ProviderInterface::class)) {
+            if ($reflectionClass->isInstantiable()
+                && $reflectionClass->implementsInterface(ProviderInterface::class)
+                && $reflectionClass->getName() !== GenericProvider::class) {
                 $providers[] = $reflectionClass;
             }
         }

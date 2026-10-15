@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Tests\Fixtures;
 
-use TheDomeFfm\EmailCanonicalizer\EmailAddress;
+use TheDomeFfm\EmailCanonicalizer\Matcher\DomainMatcherInterface;
+use TheDomeFfm\EmailCanonicalizer\Matcher\ExactDomainMatcher;
 use TheDomeFfm\EmailCanonicalizer\Provider\ProviderInterface;
+use TheDomeFfm\EmailCanonicalizer\Rule\RemoveCharactersRule;
+use TheDomeFfm\EmailCanonicalizer\Rule\RuleInterface;
 
 /**
- * Test double: removes dots from the local part for the configured domains.
+ * Test double: removes dots from the local part for the configured domain.
  */
 final readonly class StripDotsProvider implements ProviderInterface
 {
-    /**
-     * @param list<string> $domains
-     */
     public function __construct(
         private string $name = 'strip-dots',
-        private array $domains = ['example.com'],
+        private string $domain = 'example.com',
     ) {}
 
     public function name(): string
@@ -25,13 +25,16 @@ final readonly class StripDotsProvider implements ProviderInterface
         return $this->name;
     }
 
-    public function supports(string $domain): bool
+    public function domainMatcher(): DomainMatcherInterface
     {
-        return in_array($domain, $this->domains, true);
+        return new ExactDomainMatcher($this->domain);
     }
 
-    public function applyRules(EmailAddress $emailAddress): EmailAddress
+    /**
+     * @return list<RuleInterface>
+     */
+    public function rules(): array
     {
-        return new EmailAddress(str_replace('.', '', $emailAddress->localPart), $emailAddress->domain);
+        return [new RemoveCharactersRule('.')];
     }
 }

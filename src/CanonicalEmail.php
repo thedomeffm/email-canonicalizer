@@ -28,9 +28,4 @@ final readonly class CanonicalEmail implements Stringable
     {
         return $this->localPart . '@' . $this->domain;
     }
-
-    public function isKnownProvider(): bool
-    {
-        return $this->provider instanceof ProviderInterface;
-    }
 }

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace TheDomeFfm\EmailCanonicalizer\Provider;
 
-use TheDomeFfm\EmailCanonicalizer\Rule\LocalPartRuleInterface;
+use TheDomeFfm\EmailCanonicalizer\Matcher\DomainMatcherInterface;
+use TheDomeFfm\EmailCanonicalizer\Matcher\ExactDomainMatcher;
+use TheDomeFfm\EmailCanonicalizer\Rule\RuleInterface;
 use TheDomeFfm\EmailCanonicalizer\Rule\SubaddressRule;
 
 /**
@@ -14,27 +16,22 @@ use TheDomeFfm\EmailCanonicalizer\Rule\SubaddressRule;
  *
  * @see docs/providers.md#proton-mail
  */
-final class ProtonProvider extends AbstractProvider
+final readonly class ProtonProvider implements ProviderInterface
 {
     public function name(): string
     {
         return 'proton';
     }
 
-    protected function primaryDomain(): string
+    public function domainMatcher(): DomainMatcherInterface
     {
-        return 'proton.me';
-    }
-
-    protected function additionalDomains(): array
-    {
-        return ['protonmail.com', 'protonmail.ch', 'pm.me'];
+        return new ExactDomainMatcher('proton.me', 'protonmail.com', 'protonmail.ch', 'pm.me');
     }
 
     /**
-     * @return list<LocalPartRuleInterface>
+     * @return list<RuleInterface>
      */
-    protected function rules(): array
+    public function rules(): array
     {
         return [new SubaddressRule('+')];
     }

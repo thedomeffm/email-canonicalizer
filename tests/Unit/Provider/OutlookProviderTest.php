@@ -2,16 +2,15 @@
 
 declare(strict_types=1);
 
-use TheDomeFfm\EmailCanonicalizer\EmailAddress;
-use TheDomeFfm\EmailCanonicalizer\EmailCanonicalizer;
+use Tests\Fixtures\Canonical;
 use TheDomeFfm\EmailCanonicalizer\Provider\OutlookProvider;
 
 test('it is named outlook', function (): void {
     expect((new OutlookProvider())->name())->toBe('outlook');
 });
 
-test('it supports only outlook.com', function (string $domain, bool $expected): void {
-    expect((new OutlookProvider())->supports($domain))->toBe($expected);
+test('it matches only outlook.com', function (string $domain, bool $expected): void {
+    expect((new OutlookProvider())->domainMatcher()->matches($domain))->toBe($expected);
 })->with([
     'outlook.com' => ['outlook.com', true],
     'hotmail.com is not documented' => ['hotmail.com', false],
@@ -22,10 +21,7 @@ test('it supports only outlook.com', function (string $domain, bool $expected): 
 ]);
 
 test('it removes the subaddress and keeps dots', function (string $localPart, string $expected): void {
-    $emailAddress = (new OutlookProvider())->applyRules(new EmailAddress($localPart, 'outlook.com'));
-
-    expect($emailAddress->localPart)->toBe($expected)
-        ->and($emailAddress->domain)->toBe('outlook.com');
+    expect(Canonical::email(new OutlookProvider(), $localPart . '@outlook.com'))->toBe($expected . '@outlook.com');
 })->with([
     'unchanged' => ['johndoe', 'johndoe'],
     'dots are kept' => ['john.doe', 'john.doe'],
@@ -34,10 +30,7 @@ test('it removes the subaddress and keeps dots', function (string $localPart, st
 ]);
 
 test('it canonicalizes outlook addresses end to end', function (string $email): void {
-    $canonicalEmail = (new EmailCanonicalizer(new OutlookProvider()))->canonicalize($email);
-
-    expect($canonicalEmail->email())->toBe('john.doe@outlook.com')
-        ->and($canonicalEmail->provider?->name())->toBe('outlook');
+    expect(Canonical::email(new OutlookProvider(), $email))->toBe('john.doe@outlook.com');
 })->with([
     'john.doe@outlook.com',
     'John.Doe@Outlook.com',

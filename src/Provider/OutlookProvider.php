@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace TheDomeFfm\EmailCanonicalizer\Provider;
 
-use TheDomeFfm\EmailCanonicalizer\Rule\LocalPartRuleInterface;
+use TheDomeFfm\EmailCanonicalizer\Matcher\DomainMatcherInterface;
+use TheDomeFfm\EmailCanonicalizer\Matcher\ExactDomainMatcher;
+use TheDomeFfm\EmailCanonicalizer\Rule\RuleInterface;
 use TheDomeFfm\EmailCanonicalizer\Rule\SubaddressRule;
 
 /**
@@ -14,22 +16,22 @@ use TheDomeFfm\EmailCanonicalizer\Rule\SubaddressRule;
  *
  * @see docs/providers.md#outlookcom
  */
-final class OutlookProvider extends AbstractProvider
+final readonly class OutlookProvider implements ProviderInterface
 {
     public function name(): string
     {
         return 'outlook';
     }
 
-    protected function primaryDomain(): string
+    public function domainMatcher(): DomainMatcherInterface
     {
-        return 'outlook.com';
+        return new ExactDomainMatcher('outlook.com');
     }
 
     /**
-     * @return list<LocalPartRuleInterface>
+     * @return list<RuleInterface>
      */
-    protected function rules(): array
+    public function rules(): array
     {
         return [new SubaddressRule('+')];
     }

@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-use TheDomeFfm\EmailCanonicalizer\Rule\CharacterRule;
-use TheDomeFfm\EmailCanonicalizer\Rule\LocalPartRuleInterface;
+use TheDomeFfm\EmailCanonicalizer\EmailAddress;
+use TheDomeFfm\EmailCanonicalizer\Rule\RemoveCharactersRule;
+use TheDomeFfm\EmailCanonicalizer\Rule\RuleInterface;
 
-test('it implements the local part rule interface', function (): void {
-    expect(new CharacterRule())->toBeInstanceOf(LocalPartRuleInterface::class);
+test('it implements the rule interface', function (): void {
+    expect(new RemoveCharactersRule('.'))->toBeInstanceOf(RuleInterface::class);
 });
 
-test('it changes nothing without configuration', function (): void {
-    expect((new CharacterRule())->apply('john.doe-smith'))->toBe('john.doe-smith');
-});
+test('it removes characters from the local part only', function (string $localPart, string $expected): void {
+    $emailAddress = (new RemoveCharactersRule('.'))->apply(new EmailAddress($localPart, 'example.com'));
 
-test('it removes characters', function (string $localPart, string $expected): void {
-    expect((new CharacterRule(remove: ['.']))->apply($localPart))->toBe($expected);
+    expect($emailAddress->localPart)->toBe($expected)
+        ->and($emailAddress->domain)->toBe('example.com');
 })->with([
     'no dots' => ['johndoe', 'johndoe'],
     'one dot' => ['john.doe', 'johndoe'],
@@ -23,31 +23,15 @@ test('it removes characters', function (string $localPart, string $expected): vo
 ]);
 
 test('it removes several different characters', function (): void {
-    expect((new CharacterRule(remove: ['.', '_']))->apply('john.doe_smith'))->toBe('johndoesmith');
+    $emailAddress = (new RemoveCharactersRule('.', '_'))->apply(new EmailAddress('john.doe_smith', 'example.com'));
+
+    expect($emailAddress->localPart)->toBe('johndoesmith');
 });
 
-test('it replaces characters', function (): void {
-    $characterRule = new CharacterRule(replace: [
-        '-' => '.',
-    ]);
-
-    expect($characterRule->apply('john-doe.smith'))->toBe('john.doe.smith');
-});
-
-test('it replaces before it removes', function (): void {
-    $characterRule = new CharacterRule(remove: ['.'], replace: [
-        '-' => '.',
-    ]);
-
-    expect($characterRule->apply('john-doe.smith'))->toBe('johndoesmith');
-});
-
-test('it rejects empty characters to remove', function (): void {
-    new CharacterRule(remove: ['']);
+test('it rejects empty characters', function (): void {
+    new RemoveCharactersRule('.', '');
 })->throws(InvalidArgumentException::class);
 
-test('it rejects empty characters to replace', function (): void {
-    new CharacterRule(replace: [
-        '' => '.',
-    ]);
+test('it requires at least one character', function (): void {
+    new RemoveCharactersRule();
 })->throws(InvalidArgumentException::class);

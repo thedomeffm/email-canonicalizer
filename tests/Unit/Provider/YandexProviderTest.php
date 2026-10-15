@@ -2,16 +2,15 @@
 
 declare(strict_types=1);
 
-use TheDomeFfm\EmailCanonicalizer\EmailAddress;
-use TheDomeFfm\EmailCanonicalizer\EmailCanonicalizer;
+use Tests\Fixtures\Canonical;
 use TheDomeFfm\EmailCanonicalizer\Provider\YandexProvider;
 
 test('it is named yandex', function (): void {
     expect((new YandexProvider())->name())->toBe('yandex');
 });
 
-test('it supports the documented yandex domains', function (string $domain, bool $expected): void {
-    expect((new YandexProvider())->supports($domain))->toBe($expected);
+test('it matches the documented yandex domains', function (string $domain, bool $expected): void {
+    expect((new YandexProvider())->domainMatcher()->matches($domain))->toBe($expected);
 })->with([
     'yandex.com' => ['yandex.com', true],
     'yandex.ru' => ['yandex.ru', true],
@@ -23,9 +22,7 @@ test('it supports the documented yandex domains', function (string $domain, bool
 ]);
 
 test('it removes the subaddress and keeps dots and hyphens', function (string $localPart, string $expected): void {
-    $emailAddress = (new YandexProvider())->applyRules(new EmailAddress($localPart, 'yandex.com'));
-
-    expect($emailAddress->localPart)->toBe($expected);
+    expect(Canonical::email(new YandexProvider(), $localPart . '@yandex.com'))->toBe($expected . '@yandex.com');
 })->with([
     'unchanged' => ['johndoe', 'johndoe'],
     'dots are kept' => ['john.doe', 'john.doe'],
@@ -34,8 +31,5 @@ test('it removes the subaddress and keeps dots and hyphens', function (string $l
 ]);
 
 test('it rewrites the alias domains to yandex.com', function (string $domain): void {
-    $canonicalEmail = (new EmailCanonicalizer(new YandexProvider()))->canonicalize('John.Doe+shopping@' . strtoupper($domain));
-
-    expect($canonicalEmail->email())->toBe('john.doe@yandex.com')
-        ->and($canonicalEmail->provider?->name())->toBe('yandex');
+    expect(Canonical::email(new YandexProvider(), 'John.Doe+shopping@' . strtoupper($domain)))->toBe('john.doe@yandex.com');
 })->with(['yandex.com', 'yandex.ru', 'yandex.by', 'yandex.kz', 'ya.ru']);

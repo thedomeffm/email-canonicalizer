@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace TheDomeFfm\EmailCanonicalizer\Rule;
 
-interface LocalPartRuleInterface
+use TheDomeFfm\EmailCanonicalizer\EmailAddress;
+
+interface RuleInterface
 {
     /**
-     * @param string $localPart trimmed and lowercased local part
+     * @param EmailAddress $emailAddress the address with a lowercased local part and domain
      */
-    public function apply(string $localPart): string;
+    public function apply(EmailAddress $emailAddress): EmailAddress;
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TheDomeFfm\EmailCanonicalizer;
 
 use TheDomeFfm\EmailCanonicalizer\Exception\InvalidEmailException;
+use TheDomeFfm\EmailCanonicalizer\Exception\MissingExtensionException;
 
 interface EmailCanonicalizerInterface
 {
@@ -13,6 +14,7 @@ interface EmailCanonicalizerInterface
      * Never use the result for login or for sending mail.
      *
      * @throws InvalidEmailException
+     * @throws MissingExtensionException for an internationalized domain when ext-intl is missing
      */
     public function canonicalize(string $email): CanonicalEmail;
 }

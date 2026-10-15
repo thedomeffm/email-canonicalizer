@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace TheDomeFfm\EmailCanonicalizer\Rule;
 
 use InvalidArgumentException;
+use TheDomeFfm\EmailCanonicalizer\EmailAddress;
 
 /**
  * Removes everything from the first separator onward, e.g. "john+newsletter" becomes "john".
  */
-final readonly class SubaddressRule implements LocalPartRuleInterface
+final readonly class SubaddressRule implements RuleInterface
 {
     public function __construct(
         private string $separator = '+',
@@ -19,15 +20,15 @@ final readonly class SubaddressRule implements LocalPartRuleInterface
         }
     }
 
-    public function apply(string $localPart): string
+    public function apply(EmailAddress $emailAddress): EmailAddress
     {
-        $separatorPosition = strpos($localPart, $this->separator);
+        $separatorPosition = strpos($emailAddress->localPart, $this->separator);
 
         // A local part that starts with the separator has nothing left to keep.
         if ($separatorPosition === false || $separatorPosition === 0) {
-            return $localPart;
+            return $emailAddress;
         }
 
-        return substr($localPart, 0, $separatorPosition);
+        return new EmailAddress(substr($emailAddress->localPart, 0, $separatorPosition), $emailAddress->domain);
     }
 }
