@@ -28,7 +28,7 @@ jobs:
       - run: vendor/bin/pest
 
   lint:
-    name: ECS & Rector
+    name: ECS, Rector & PHPStan
     runs-on: ubuntu-latest
 
     steps:
@@ -42,7 +42,9 @@ jobs:
 
       - uses: ramsey/composer-install@v4.0.0
 
-      # Both only report; neither writes changes.
+      # None of these write changes.
       - run: vendor/bin/ecs check --no-progress-bar
 
       - run: vendor/bin/rector process --dry-run --no-progress-bar
+
+      - run: vendor/bin/phpstan analyse --no-progress

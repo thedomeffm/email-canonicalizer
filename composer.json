@@ -1,14 +1,41 @@
 {
     "name": "thedomeffm/email-canonicalizer",
-    "description": "Canonicalize public email service provider addresses",
-    "keywords": ["email", "canonical", "gmail", "googlemail"],
+    "description": "Canonicalize addresses at public email providers (Gmail, Outlook, Proton, Fastmail, Yandex, Posteo, mailbox.org) to detect duplicate signups",
+    "keywords": [
+        "email",
+        "canonical",
+        "normalize",
+        "deduplication",
+        "signup",
+        "gmail",
+        "googlemail",
+        "fastmail",
+        "proton",
+        "yandex",
+        "posteo"
+    ],
     "type": "library",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Domenic Gerhold",
+            "email": "domenic.gerhold@44bit.dev"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/thedomeffm/email-canonicalizer/issues",
+        "source": "https://github.com/thedomeffm/email-canonicalizer"
+    },
     "require": {
-        "php": ">=8.3"
+        "php": ">=8.3",
+        "ext-mbstring": "*"
+    },
+    "suggest": {
+        "ext-intl": "Needed to canonicalize internationalized domain names such as müller.de"
     },
     "require-dev": {
         "pestphp/pest": "^4.7.8",
+        "phpstan/phpstan": "^2",
         "rector/rector": "^2.7",
         "symplify/easy-coding-standard": "^13.3"
     },
