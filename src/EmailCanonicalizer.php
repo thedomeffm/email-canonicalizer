@@ -9,6 +9,7 @@ use TheDomeFfm\EmailCanonicalizer\Provider\GmailProvider;
 use TheDomeFfm\EmailCanonicalizer\Provider\OutlookProvider;
 use TheDomeFfm\EmailCanonicalizer\Provider\ProtonProvider;
 use TheDomeFfm\EmailCanonicalizer\Provider\ProviderInterface;
+use TheDomeFfm\EmailCanonicalizer\Provider\YandexProvider;
 
 final readonly class EmailCanonicalizer implements EmailCanonicalizerInterface
 {
@@ -31,7 +32,7 @@ final readonly class EmailCanonicalizer implements EmailCanonicalizerInterface
      */
     public static function defaultProviders(): array
     {
-        return [new GmailProvider(), new OutlookProvider(), new ProtonProvider(), new FastmailProvider()];
+        return [new GmailProvider(), new OutlookProvider(), new ProtonProvider(), new FastmailProvider(), new YandexProvider()];
     }
 
     public function canonicalize(string $email): CanonicalEmail

@@ -45,14 +45,19 @@ $canonicalizer = new EmailCanonicalizer(...EmailCanonicalizer::defaultProviders(
 
 Every address is trimmed and lowercased first. On top of that, these provider rules apply:
 
-| Provider | Class | Primary domain | Other domains | Rules |
-|---|---|---|---|---|
-| Gmail | `GmailProvider` | `gmail.com` | `googlemail.com` (rewritten to `gmail.com`) | removes `+tag` and dots |
-| Outlook.com | `OutlookProvider` | `outlook.com` | | removes `+tag` |
-| Proton Mail | `ProtonProvider` | `proton.me` | `protonmail.com`, `protonmail.ch`, `pm.me` (kept as they are) | removes `+tag` |
-| Fastmail | `FastmailProvider` | `fastmail.com` | | removes `+tag`; `tag@user.fastmail.com` becomes `user@fastmail.com` |
+| Provider | Class | Primary domain | Other domains | Removes `+tag` | Removes dots | Subdomain addressing |
+|---|---|---|---|---|---|---|
+| Gmail | `GmailProvider` | `gmail.com` | `googlemail.com` (rewritten to `gmail.com`) | yes | yes | no |
+| Outlook.com | `OutlookProvider` | `outlook.com` | | yes | no | no |
+| Proton Mail | `ProtonProvider` | `proton.me` | `protonmail.com`, `protonmail.ch`, `pm.me` (kept as they are) | yes | no | no |
+| Fastmail | `FastmailProvider` | `fastmail.com` | 115 more official Fastmail domains, e.g. `fastmail.fm`, `sent.com` (kept as they are) | yes | no | yes: `tag@user.fastmail.com` becomes `user@fastmail.com` |
+| Yandex | `YandexProvider` | `yandex.com` | `yandex.ru`, `yandex.by`, `yandex.kz`, `ya.ru` (rewritten to `yandex.com`) | yes | no | no |
 
-Only rules that the provider documents officially are applied. The one exception is `googlemail.com`, which Google doesn't document but which was verified with a real delivery test. A wrong rule would merge different people, so providers without official documentation (e.g. Hotmail, iCloud, Yahoo, GMX) are left out for now.
+Only rules that the provider documents officially are applied. The one exception is `googlemail.com`, which Google doesn't document but which was verified with a real delivery test.
 
-See [docs/providers.md](docs/providers.md) for the sources behind each rule, and for why other providers are not supported yet.
+When we are not sure, we prefer a possible duplicate account over a wrong canonical address: a missing rule only lets a duplicate slip through, but a wrong rule merges two different people and blocks a real user. That's why providers without official documentation (e.g. Hotmail, iCloud, Yahoo, GMX) are left out for now.
 
+> [!NOTE]
+> This list is outdated the moment a version is released, because providers change their domains and rules without notice. We try to keep it up to date as far as possible. If you notice a change, please open an issue or pull request with a link to the official source.
+
+See [docs/providers.md](docs/providers.md) for an overview of all rules with their official sources, for providers that are not supported yet, and for rules other libraries apply that we deliberately don't.

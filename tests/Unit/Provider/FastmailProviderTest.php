@@ -15,7 +15,7 @@ test('it is named fastmail', function (): void {
     expect((new FastmailProvider())->name())->toBe('fastmail');
 });
 
-test('it supports fastmail.com and one subdomain level', function (string $domain, bool $expected): void {
+test('it supports the official fastmail domains and one subdomain level', function (string $domain, bool $expected): void {
     expect((new FastmailProvider())->supports($domain))->toBe($expected);
 })->with([
     'fastmail.com' => ['fastmail.com', true],
@@ -23,7 +23,15 @@ test('it supports fastmail.com and one subdomain level', function (string $domai
     'subdomain with hyphen' => ['john-doe.fastmail.com', true],
     'two subdomain levels are not supported' => ['news.john.fastmail.com', false],
     'underscore is not allowed in the alias' => ['john_doe.fastmail.com', false],
-    'other fastmail domain is not documented' => ['fastmail.fm', false],
+    'fastmail.fm' => ['fastmail.fm', true],
+    'global non-fastmail brand' => ['sent.com', true],
+    'eu region domain' => ['fastmail.co.uk', true],
+    'us region domain' => ['h-mail.us', true],
+    'subdomain of other fastmail domain' => ['john.fastmail.fm', true],
+    'subdomain of three-label domain' => ['john.fastmail.co.uk', true],
+    'pobox domain is left out' => ['pobox.com', false],
+    'subdomain of pobox domain is left out' => ['john.pobox.com', false],
+    'undocumented domain' => ['mailandftp.com', false],
     'similar domain' => ['notfastmail.com', false],
     'empty subdomain' => ['.fastmail.com', false],
 ]);
@@ -38,6 +46,17 @@ test('it removes the subaddress and keeps dots', function (string $localPart, st
     'dots are kept' => ['john.doe', 'john.doe'],
     'subaddress' => ['johndoe+newsletter', 'johndoe'],
     'dots and subaddress' => ['john.doe+newsletter', 'john.doe'],
+]);
+
+test('it keeps each fastmail domain and does not merge them', function (string $email, string $expected): void {
+    $canonicalEmail = (new EmailCanonicalizer(new FastmailProvider()))->canonicalize($email);
+
+    expect($canonicalEmail->email())->toBe($expected);
+})->with([
+    'plus addressing' => ['john+shopping@fastmail.fm', 'john@fastmail.fm'],
+    'subdomain addressing' => ['shopping@john.fastmail.fm', 'john@fastmail.fm'],
+    'three-label domain' => ['shopping@john.fastmail.co.uk', 'john@fastmail.co.uk'],
+    'non-fastmail brand' => ['john+shopping@sent.com', 'john@sent.com'],
 ]);
 
 test('it moves the subdomain into the local part', function (string $localPart): void {
