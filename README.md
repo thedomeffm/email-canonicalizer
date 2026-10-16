@@ -74,10 +74,10 @@ new EmailCanonicalizer(new LowercaseProvider());        // only trim and lowerca
 
 ### Versioning
 
-The canonical address is meant to be stored, so its stability is part of the API. There is no changelog; changes show up in the git history and the GitHub release notes:
+The canonical address is meant to be stored, so its stability is part of the API. There is no changelog file. Every release's GitHub release notes list each added provider and each changed rule or domain:
 
 - Changing the canonical address of an input for an existing provider class (a new rule or domain, different lowercasing) only happens in a new major version.
-- `PublicMailProviders`, and so `EmailCanonicalizer::default()`, may gain providers in minor versions. If you need frozen keys, pass the providers explicitly, e.g. `new EmailCanonicalizer(new GmailProvider(), new LowercaseProvider())`.
+- `PublicMailProviders`, and so `EmailCanonicalizer::default()`, may gain providers in minor versions (listed in that release's notes). If you need frozen keys, pass the providers explicitly, e.g. `new EmailCanonicalizer(new GmailProvider(), new LowercaseProvider())`.
 - Store the original address as well, and re-canonicalize when you upgrade.
 
 ### Supported Providers
