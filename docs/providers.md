@@ -2,7 +2,7 @@
 
 This document is the evidence behind every provider in this library. Each provider class in `src/Provider/` links here, and every domain, alias and rule a provider applies must be listed below with its source.
 
-Last checked: 2026-10-15.
+Last checked: 2026-10-17.
 
 > [!NOTE]
 > This list is outdated the moment it is released. Providers add domains and change their rules without notice. We keep it up to date as well as we can. If you find a change, please open an issue or pull request with the official source.
@@ -13,7 +13,7 @@ Which rules apply to which provider, and where the official source is. Every add
 
 | Provider | Status | Removes `+tag` | Removes dots | Subdomain addressing | Alias domains (rewritten) | Official sources |
 |---|---|---|---|---|---|---|
-| [Gmail](#gmail) | supported | yes | yes | no | `googlemail.com` (delivery test) | [aliases](https://support.google.com/mail/answer/22370?hl=en), [dots](https://support.google.com/mail/answer/7436150?hl=en) |
+| [Gmail](#gmail) | supported | yes | yes | no | `googlemail.com` | [aliases](https://support.google.com/mail/answer/22370?hl=en), [googlemail](https://support.google.com/mail/answer/10313?hl=en), [dots](https://support.google.com/mail/answer/7436150?hl=en) |
 | [Outlook.com](#outlookcom) | supported | yes | no | no | none | [plus addresses](https://support.microsoft.com/en-us/outlook/send-email-from-a-different-address-in-outlook-com) |
 | [Proton Mail](#proton-mail) | supported | yes | no | no | none | [addresses and aliases](https://proton.me/support/addresses-and-aliases) |
 | [Fastmail](#fastmail) | supported (116 official domains) | yes | no | yes | none | [plus and subdomain addressing](https://www.fastmail.help/hc/en-us/articles/360060591053-Plus-addressing-and-subdomain-addressing), [domain list](https://www.fastmail.help/hc/en-us/articles/6239365719055-What-domains-can-I-use-with-Fastmail) |
@@ -32,7 +32,6 @@ Which rules apply to which provider, and where the official source is. Every add
 The goal is to never block a real user. **If we are not sure, we accept a possible duplicate account instead of merging two addresses into one canonical address.**
 
 - **Only official documentation counts.** A help page or documentation from the provider itself. Blog posts, Stack Exchange answers, user reports and other libraries are not enough.
-- **One exception: a verified delivery test.** If no official source exists, a real delivery test by a maintainer can back an alias domain. It must be marked as such below, with the date of the test. So far this applies only to `googlemail.com`.
 - **Domains are not merged unless documented.** Similar-looking domains of one provider can be separate mailboxes. A domain only becomes an alias domain if the provider documents that it reaches the same mailbox as the primary domain. Otherwise it is an additional domain.
 - **When in doubt, leave it out.** A missing rule only lets a duplicate account slip through. A wrong rule merges different people and blocks a real user.
 - **Other libraries are hints, not evidence.** They are useful to find candidates, but some of their rules are wrong, see [rules we deliberately don't apply](#rules-we-deliberately-dont-apply).
@@ -44,7 +43,7 @@ The canonicalizer always trims the address and lowercases its domain first. Each
 In the code, a provider is a domain matcher plus rules; a `RewriteDomainRule` rewrites alias domains. Each provider has three kinds of domains:
 
 - **Primary domain:** usually the provider's most common domain (Yandex is an exception, see [Yandex](#yandex)).
-- **Alias domains:** documented (or verified by a delivery test) to reach the same mailbox as the primary domain. They are rewritten to the primary domain.
+- **Alias domains:** documented to reach the same mailbox as the primary domain. They are rewritten to the primary domain.
 - **Additional domains:** the provider's rules apply, but they are separate mailboxes. They are kept as they are.
 
 ### Gmail
@@ -53,21 +52,21 @@ In the code, a provider is a domain matcher plus rules; a `RewriteDomainRule` re
 |---|---|
 | Name | `gmail` |
 | Primary domain | `gmail.com` |
-| Alias domains | `googlemail.com`, verified by test, see below |
+| Alias domains | `googlemail.com`, see below |
 | Additional domains | none |
 | Rules | `+tag` is removed, dots in the local part are removed |
 
 Sources:
 
 - [Send emails from a different address or alias](https://support.google.com/mail/answer/22370?hl=en): "messages sent to the following aliases will all go to janedoe@gmail.com", e.g. `janedoe+school@gmail.com`.
+- [Messages sent to a googlemail.com address](https://support.google.com/mail/answer/10313?hl=en): "Messages sent to @gmail.com and @googlemail.com are the same." and "Some countries use @googlemail.com instead, but messages sent to the address will go to the same place."
 - [Dots don't matter in Gmail addresses](https://support.google.com/mail/answer/7436150?hl=en): `j.o.h.n.s.m.i.t.h@gmail.com` reaches `johnsmith@gmail.com`. This does not apply to Google Workspace accounts, see [custom domains](#custom-domains-google-workspace-exchange-online).
 
-`googlemail.com` (verified by test on 2026-10-13, not officially documented):
+`googlemail.com` (documented by Google, see above; additionally checked with a delivery test on 2026-10-13):
 
-- Widely known as an alias domain of `gmail.com`, and especially relevant for German users, who were given `@googlemail.com` addresses until 2012. No current official Google page confirms it.
+- Especially relevant for German users, who were given `@googlemail.com` addresses until 2012.
 - Delivery test: a mail sent to `<name>@googlemail.com` arrived in the inbox of `<name>@gmail.com`.
 - So `<name>@googlemail.com` belongs exclusively to the owner of `<name>@gmail.com`: mail to it reaches that owner, so it can't be a separate person's mailbox.
-- Context, not official: a [Gmail Community thread](https://support.google.com/mail/thread/378507106/confused-email-addresses?hl=en) and a [Google Groups discussion](https://groups.google.com/g/gmail-users/c/wH0itYAIodQ) describe the two domains as one mailbox.
 
 ### Outlook.com
 
@@ -202,25 +201,25 @@ These come up often, but have no official source yet. They can be added once one
 
 ### Hotmail, Live, MSN and Outlook country domains
 
-`hotmail.*`, `live.*`, `msn.com` and domains like `outlook.de` belong to the same service, but the official documentation only gives `outlook.com` as an example. A user on Microsoft Q&A reports that plus mails to Hotmail sometimes did not arrive.
+`hotmail.*`, `live.*`, `msn.com` and domains like `outlook.de` belong to the same service, but the official documentation only gives `outlook.com` as an example. A user on Microsoft Q&A reports that plus mails to Hotmail sometimes did not arrive. Re-checked 2026-10-17: the [plus address page](https://support.microsoft.com/en-us/outlook/send-email-from-a-different-address-in-outlook-com) names only `outlook.com`; claims that it works for Hotmail come from third parties only.
 
 ### iCloud
 
 `icloud.com`, `me.com` and `mac.com`: user tests on Apple Stack Exchange say `+tag` works, but Apple does not document it.
 
-[About your @icloud.com, @me.com, and @mac.com email addresses](https://support.apple.com/HT201771) says that older accounts can use several of these domains. It does not say that `name@me.com` and `name@icloud.com` always share the same name or reach the same mailbox, so the domains are not merged.
+[About your @icloud.com, @me.com, and @mac.com email addresses](https://support.apple.com/en-us/118230) says that older accounts can use several of these domains. It does not say that `name@me.com` and `name@icloud.com` always share the same name or reach the same mailbox, so the domains are not merged.
 
 ### Yahoo
 
-Sources contradict each other, and the Yahoo help page was not reachable. The hyphen rule some libraries (e.g. validator.js) apply would break real addresses like `max-muster@yahoo.de`, so no rule is applied.
+Sources contradict each other. Yahoo's [disposable address help](https://help.yahoo.com/kb/att/SLN35808.html) says these addresses "consist of 2 parts, a "base name" and a "keyword" (basename-keyword@yahoo.com)" and that the base name, once set, "can't be changed". The base name is therefore not the account's mailbox name. The hyphen rule some libraries (e.g. validator.js) apply would break real addresses like `max-muster@yahoo.de`, so no rule is applied.
 
 ### Mail.ru
 
-Other libraries remove `+tag`, but no official Mail.ru documentation was found.
+Other libraries remove `+tag`, but no official Mail.ru documentation was found (searched in English and Russian, 2026-10-17; only community posts).
 
 ### Zoho
 
-sunaoka/email-normalizer-php applies `+tag` for `zoho.com` and `zohomail.com`. We found no official Zoho help page on plus addressing (checked 2026-10-15). The only statement is a community thread from a Zoho staff member, which says mail to `name+tag@domain` reaches `name@domain` for accounts hosted in Zoho Mail, and which may be outdated.
+sunaoka/email-normalizer-php applies `+tag` for `zoho.com` and `zohomail.com`. We found no official Zoho help page on plus addressing (checked 2026-10-15 and 2026-10-17). The only statement is a community thread from a Zoho staff member, which says mail to `name+tag@domain` reaches `name@domain` for accounts hosted in Zoho Mail, and which may be outdated.
 
 ### GMX, WEB.DE, T-Online, AOL
 
@@ -243,7 +242,7 @@ Other libraries apply these rules. They merge addresses of different people, so 
 |---|---|
 | Remove dots for `google.com` | `google.com` is a Google Workspace domain, and for Workspace accounts [dots count](https://support.google.com/mail/answer/7436150?hl=en). |
 | Remove dots for `live.com` | Not documented by Microsoft, and reported as wrong in [issue #2](https://github.com/Gabrola/email-normalizer/issues/2) and [PR #5](https://github.com/Gabrola/email-normalizer/pull/5). |
-| Cut off everything after `-` for Yahoo | Breaks real addresses like `max-muster@yahoo.de`, see [Yahoo](#yahoo). |
+| Cut off everything after `-` for Yahoo | Breaks real addresses like `max-muster@yahoo.de`. The `basename-keyword` form only exists for disposable addresses, whose base name is chosen separately, see [Yahoo](#yahoo). |
 | Rewrite `me.com` and `mac.com` to `icloud.com` | Not documented by Apple, see [iCloud](#icloud). |
 | Rewrite `yandex.ua` to `yandex.com` | Not on Yandex's list of additional addresses, see [Yandex](#yandex). |
 

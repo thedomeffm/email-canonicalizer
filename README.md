@@ -35,6 +35,36 @@ $canonicalEmail->provider?->name(); // "gmail"
 
 Addresses at unknown domains are only trimmed and lowercased: `John.Doe@Example.com` becomes `john.doe@example.com` (provider `lowercase`).
 
+### Examples
+
+Results of `EmailCanonicalizer::default()`. These are checked by `tests/Unit/ReadmeExamplesTest.php`.
+
+**One example per provider:**
+
+| Input | Canonical | Provider | What happens |
+|---|---|---|---|
+| `J.o.h.n.Doe+Shopping@GoogleMail.com` | `johndoe@gmail.com` | `gmail` | lowercased, `+tag` and dots removed, `googlemail.com` becomes `gmail.com` |
+| `John.Doe+Shopping@outlook.com` | `john.doe@outlook.com` | `outlook` | lowercased, `+tag` removed, dots stay |
+| `John.Doe+Shopping@proton.me` | `john.doe@proton.me` | `proton` | lowercased, `+tag` removed, dots stay |
+| `shopping@john.fastmail.com` | `john@fastmail.com` | `fastmail` | subdomain addressing: `john` becomes the local part |
+| `John+Shopping@fastmail.fm` | `john@fastmail.fm` | `fastmail` | `+tag` removed, the domain stays as it is |
+| `John.Doe+Shopping@yandex.ru` | `john.doe@yandex.com` | `yandex` | `+tag` removed, `yandex.ru` becomes `yandex.com` |
+| `John.Doe+shopping@posteo.net` | `john.doe@posteo.net` | `posteo` | `+filter` removed, the domain stays as it is |
+| `Me+Test@mailbox.org` | `me@mailbox.org` | `mailbox-org` | `+extension` removed |
+| `John.Doe+Shopping@Example.com` | `john.doe+shopping@example.com` | `lowercase` | unknown domain: only lowercased, `+tag` stays |
+
+**Where rules deliberately do not apply:**
+
+| Input | Canonical | Provider | Why |
+|---|---|---|---|
+| `john.doe+shopping@company.example` | `john.doe+shopping@company.example` | `lowercase` | A custom domain can be hosted at Google Workspace or Exchange, where dots count and admins configure `+tag`. The domain doesn't show who hosts it. |
+| `John+Shopping@hotmail.com` | `john+shopping@hotmail.com` | `lowercase` | Microsoft documents `+tag` only for `outlook.com`. |
+| `max-muster@yahoo.de` | `max-muster@yahoo.de` | `lowercase` | Yahoo documents no rule for `-`, and it is part of real names. |
+| `john@me.com` | `john@me.com` | `lowercase` | Apple doesn't document that `me.com` and `icloud.com` are the same mailbox. |
+| `john+shopping@protonmail.com` | `john@protonmail.com` | `proton` | `+tag` is removed, but `protonmail.com` is not merged into `proton.me`. |
+
+See [docs/providers.md](docs/providers.md) for the sources.
+
 ### Choosing providers
 
 The first provider whose domain matcher matches wins. A provider is configuration: a name, a `DomainMatcherInterface` and ordered rules. The canonicalizer lowercases the local part and applies the rules.
@@ -57,7 +87,7 @@ EmailCanonicalizer::default(
 // only the providers you pass
 new EmailCanonicalizer(new GmailProvider(), new LowercaseProvider());
 new EmailCanonicalizer(...new PublicMailProviders());   // known providers only, other domains keep their local part as it is
-new EmailCanonicalizer(new LowercaseProvider());        // only trim and lowercase
+EmailCanonicalizer::lowercaseOnly();                    // only trim and lowercase
 ```
 
 - No providers at all throws, so a wrong setup can't silently do nothing.
@@ -95,7 +125,7 @@ Every address is trimmed first and its domain is lowercased. Each provider lower
 | mailbox.org | `MailboxOrgProvider` | `mailbox.org` | | yes | no | no |
 | Lowercase | `LowercaseProvider` | every domain | fallback, always last | no | no | no |
 
-Only rules that the provider documents officially are applied. The one exception is `googlemail.com`, which Google doesn't document but which was verified with a real delivery test.
+Only rules that the provider documents officially are applied.
 
 When we are not sure, we prefer a possible duplicate account over a wrong canonical address: a missing rule only lets a duplicate slip through, but a wrong rule merges two different people and blocks a real user. That's why providers without official documentation (e.g. Hotmail, iCloud, Yahoo, Zoho, GMX) are left out for now.
 

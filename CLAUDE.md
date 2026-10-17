@@ -24,7 +24,7 @@ The repo is at an early stage and is developed test-first (TDD): write the faili
 
 `docs/providers.md` is the evidence behind every provider and must stay in sync with the code:
 
-- Only add a domain, alias or rule when the provider's **official** documentation backs it. Record the source link in `docs/providers.md`, and link that section from the provider class's docblock. The only exception is an alias domain verified by a real delivery test, marked as such with its date in `docs/providers.md` (so far only `googlemail.com`). Never add one based on user reports or other libraries alone.
+- Only add a domain, alias or rule when the provider's **official** documentation backs it. Record the source link in `docs/providers.md`, and link that section from the provider class's docblock. Never add one based on user reports, delivery tests or other libraries alone.
 - Similar-looking domains are not automatically one mailbox. Only make a domain an alias domain when the provider documents that it reaches the same mailbox; otherwise it's an additional domain. E.g. Proton's `protonmail.com`, `protonmail.ch` and `pm.me` support `+tag` but are additional domains, not aliases of `proton.me`.
 - When adding, changing or removing a provider, update `docs/providers.md` and the Supported Providers table in `README.md` together.
 - New provider classes must also be added to `PublicMailProviders`; `tests/Unit/PublicMailProvidersTest.php` fails otherwise.

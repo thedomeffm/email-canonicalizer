@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Tests\Fixtures\StripDotsProvider;
+use TheDomeFfm\EmailCanonicalizer\CanonicalEmail;
 use TheDomeFfm\EmailCanonicalizer\EmailCanonicalizer;
 use TheDomeFfm\EmailCanonicalizer\EmailCanonicalizerInterface;
 use TheDomeFfm\EmailCanonicalizer\Exception\InvalidEmailException;
@@ -89,6 +90,14 @@ test('a lowercase-only canonicalizer only trims and lowercases', function (): vo
     $canonicalEmail = (new EmailCanonicalizer(new LowercaseProvider()))->canonicalize(' J.D+X@Gmail.com ');
 
     expect($canonicalEmail->email())->toBe('j.d+x@gmail.com');
+});
+
+test('lowercaseOnly only trims and lowercases', function (): void {
+    $canonicalEmail = EmailCanonicalizer::lowercaseOnly()->canonicalize(' J.D+X@GoogleMail.com ');
+
+    expect($canonicalEmail)->toBeInstanceOf(CanonicalEmail::class)
+        ->and($canonicalEmail->email())->toBe('j.d+x@googlemail.com')
+        ->and($canonicalEmail->provider?->name())->toBe('lowercase');
 });
 
 test('a matched provider gets the trimmed address with a lowercased local part and domain', function (): void {

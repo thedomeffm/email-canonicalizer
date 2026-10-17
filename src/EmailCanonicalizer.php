@@ -45,6 +45,14 @@ final readonly class EmailCanonicalizer implements EmailCanonicalizerInterface
         return new self(...[...$customProviders, ...new PublicMailProviders(), new LowercaseProvider()]);
     }
 
+    /**
+     * Only trims the address and lowercases it, with no provider rules.
+     */
+    public static function lowercaseOnly(): self
+    {
+        return new self(new LowercaseProvider());
+    }
+
     public function canonicalize(string $email): CanonicalEmail
     {
         $emailAddress = EmailAddress::fromString($email);

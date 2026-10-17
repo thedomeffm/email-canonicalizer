@@ -13,8 +13,7 @@ use TheDomeFfm\EmailCanonicalizer\Rule\SubaddressRule;
 
 /**
  * Consumer Gmail: removes "+tag" and ignores dots in the local part.
- * googlemail.com is rewritten to gmail.com. That alias is verified by a delivery test,
- * not by official Google documentation.
+ * googlemail.com is rewritten to gmail.com, which Google documents as the same mailbox.
  *
  * @see docs/providers.md#gmail
  */
