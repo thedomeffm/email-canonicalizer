@@ -45,7 +45,7 @@ Results of `EmailCanonicalizer::default()`. These are checked by `tests/Unit/Rea
 |---|---|---|---|
 | `J.o.h.n.Doe+Shopping@GoogleMail.com` | `johndoe@gmail.com` | `gmail` | lowercased, `+tag` and dots removed, `googlemail.com` becomes `gmail.com` |
 | `John.Doe+Shopping@outlook.com` | `john.doe@outlook.com` | `outlook` | lowercased, `+tag` removed, dots stay |
-| `John.Doe+Shopping@proton.me` | `john.doe@proton.me` | `proton` | lowercased, `+tag` removed, dots stay |
+| `John.Doe_x-y+Shopping@proton.me` | `johndoexy@proton.me` | `proton` | lowercased, `+tag` removed, dots, underscores and hyphens removed |
 | `shopping@john.fastmail.com` | `john@fastmail.com` | `fastmail` | subdomain addressing: `john` becomes the local part |
 | `John+Shopping@fastmail.fm` | `john@fastmail.fm` | `fastmail` | `+tag` removed, the domain stays as it is |
 | `John.Doe+Shopping@yandex.ru` | `john.doe@yandex.com` | `yandex` | `+tag` removed, `yandex.ru` becomes `yandex.com` |
@@ -106,7 +106,7 @@ EmailCanonicalizer::lowercaseOnly();                    // only trim and lowerca
 
 The canonical address is meant to be stored, so its stability is part of the API. There is no changelog file. Every release's GitHub release notes list each added provider and each changed rule or domain:
 
-- Changing the canonical address of an input for an existing provider class (a new rule or domain, different lowercasing) only happens in a new major version.
+- A new rule or domain for an existing provider class may change the canonical address of some inputs. If it only merges more variants of the same mailbox (so the new key is still the one `canonicalize()` returns for all of them), it can come in a minor version, and the release notes list it. Anything else (a different domain, different lowercasing, splitting what was merged) only happens in a new major version.
 - `PublicMailProviders`, and so `EmailCanonicalizer::default()`, may gain providers in minor versions (listed in that release's notes). If you need frozen keys, pass the providers explicitly, e.g. `new EmailCanonicalizer(new GmailProvider(), new LowercaseProvider())`.
 - Store the original address as well, and re-canonicalize when you upgrade.
 
@@ -118,7 +118,7 @@ Every address is trimmed first and its domain is lowercased. Each provider lower
 |---|---|---|---|---|---|---|
 | Gmail | `GmailProvider` | `gmail.com` | `googlemail.com` (rewritten to `gmail.com`) | yes | yes | no |
 | Outlook.com | `OutlookProvider` | `outlook.com` | | yes | no | no |
-| Proton Mail | `ProtonProvider` | `proton.me` | `protonmail.com`, `protonmail.ch`, `pm.me` (kept as they are) | yes | no | no |
+| Proton Mail | `ProtonProvider` | `proton.me` | `protonmail.com`, `protonmail.ch`, `pm.me` (kept as they are) | yes | yes (also `_` and `-`) | no |
 | Fastmail | `FastmailProvider` | `fastmail.com` | 115 more official Fastmail domains, e.g. `fastmail.fm`, `sent.com` (kept as they are) | yes | no | yes: `tag@user.fastmail.com` becomes `user@fastmail.com` |
 | Yandex | `YandexProvider` | `yandex.com` | `yandex.ru`, `yandex.by`, `yandex.kz`, `ya.ru` (rewritten to `yandex.com`) | yes | no | no |
 | Posteo | `PosteoProvider` | `posteo.de` | 12 more Posteo registration domains, e.g. `posteo.com`, `posteo.net` (kept as they are) | yes | no | no |

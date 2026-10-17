@@ -28,7 +28,7 @@ The repo is at an early stage and is developed test-first (TDD): write the faili
 - Similar-looking domains are not automatically one mailbox. Only make a domain an alias domain when the provider documents that it reaches the same mailbox; otherwise it's an additional domain. E.g. Proton's `protonmail.com`, `protonmail.ch` and `pm.me` support `+tag` but are additional domains, not aliases of `proton.me`.
 - When adding, changing or removing a provider, update `docs/providers.md` and the Supported Providers table in `README.md` together.
 - New provider classes must also be added to `PublicMailProviders`; `tests/Unit/PublicMailProvidersTest.php` fails otherwise.
-- The canonical output is stored by users, so a changed rule or domain is a breaking change (see the Versioning section in `README.md`). There is deliberately no changelog file: list every added provider and every changed rule or domain in the GitHub release notes of the release, and release changes to existing output only as a major version.
+- The canonical output is stored by users, so a changed rule or domain is a breaking change (see the Versioning section in `README.md`). There is deliberately no changelog file: list every added provider and every changed rule or domain in the GitHub release notes of the release, and release changes to existing output that don't just merge more variants of one mailbox only as a major version.
 - `tests/Unit/Provider/ProviderDocumentationTest.php` enforces this: every built-in provider in `src/Provider/` (everything instantiable except `GenericProvider`, see `tests/Fixtures/ProviderClasses.php`) needs a ``| Name | `<name>` |`` row in `docs/providers.md` and an `@see docs/providers.md#<section>` line in its class docblock.
 
 ## Constraints

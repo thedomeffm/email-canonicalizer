@@ -42,7 +42,7 @@ test('it uses all public mail providers by default', function (string $email, st
 })->with([
     'gmail' => ['John.Doe+news@googlemail.com', 'johndoe@gmail.com', 'gmail'],
     'outlook' => ['John.Doe+news@outlook.com', 'john.doe@outlook.com', 'outlook'],
-    'proton' => ['John.Doe+news@pm.me', 'john.doe@pm.me', 'proton'],
+    'proton' => ['John.Doe+news@pm.me', 'johndoe@pm.me', 'proton'],
     'fastmail' => ['news@john.fastmail.com', 'john@fastmail.com', 'fastmail'],
     'yandex' => ['John.Doe+news@ya.ru', 'john.doe@yandex.com', 'yandex'],
     'posteo' => ['John.Doe+news@Posteo.de', 'john.doe@posteo.de', 'posteo'],

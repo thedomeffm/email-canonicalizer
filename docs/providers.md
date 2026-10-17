@@ -15,7 +15,7 @@ Which rules apply to which provider, and where the official source is. Every add
 |---|---|---|---|---|---|---|
 | [Gmail](#gmail) | supported | yes | yes | no | `googlemail.com` | [aliases](https://support.google.com/mail/answer/22370?hl=en), [googlemail](https://support.google.com/mail/answer/10313?hl=en), [dots](https://support.google.com/mail/answer/7436150?hl=en) |
 | [Outlook.com](#outlookcom) | supported | yes | no | no | none | [plus addresses](https://support.microsoft.com/en-us/outlook/send-email-from-a-different-address-in-outlook-com) |
-| [Proton Mail](#proton-mail) | supported | yes | no | no | none | [addresses and aliases](https://proton.me/support/addresses-and-aliases) |
+| [Proton Mail](#proton-mail) | supported | yes | yes (also `_` and `-`) | no | none | [addresses and aliases](https://proton.me/support/addresses-and-aliases), [change username](https://proton.me/support/change-username) |
 | [Fastmail](#fastmail) | supported (116 official domains) | yes | no | yes | none | [plus and subdomain addressing](https://www.fastmail.help/hc/en-us/articles/360060591053-Plus-addressing-and-subdomain-addressing), [domain list](https://www.fastmail.help/hc/en-us/articles/6239365719055-What-domains-can-I-use-with-Fastmail) |
 | [Yandex](#yandex) | supported | yes | no | no | `yandex.ru`, `yandex.by`, `yandex.kz`, `ya.ru` | [plus addresses](https://yandex.com/support/mail/reg.html), [additional addresses](https://yandex.com/support/mail/web/preferences/about-sender/additional-addresses.html) |
 | [Posteo](#posteo) | supported (13 domains) | yes | no | no | none | [filter addresses](https://posteo.de/en/help/filter-addresses), [domains](https://posteo.de/en/help/which-domains-are-available-to-use-as-a-posteo-alias-address) |
@@ -92,11 +92,12 @@ The page only names `outlook.com`. See [other Microsoft domains](#hotmail-live-m
 | Primary domain | `proton.me` |
 | Alias domains | none |
 | Additional domains | `protonmail.com`, `protonmail.ch`, `pm.me`, each kept as it is |
-| Rules | `+tag` is removed |
+| Rules | `+tag` is removed, then `.`, `_` and `-` are removed from the local part |
 
 Source:
 
 - [Email addresses and aliases](https://proton.me/support/addresses-and-aliases): "All mail sent to a plus alias arrives in your regular inbox. You don't need to set anything up." Plus aliases work for "any of your email addresses". The page lists all four domains.
+- [Change your Proton username](https://proton.me/support/change-username) (checked 2026-10-17): dots, underscores and hyphens "are treated as transparent by our service. That is, username is the same as user_name and user.name", and "once a user takes a specific username, none of these variations can be used for a different account". So a variant can't belong to another person. The page speaks about usernames and doesn't mention delivery, so this rests on "the same as".
 
 One account can have addresses on several Proton domains, but `name@proton.me` and `name@protonmail.com` are not guaranteed to be the same account, so the domains are not merged.
 

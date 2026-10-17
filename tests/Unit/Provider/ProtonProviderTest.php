@@ -20,15 +20,19 @@ test('it matches the four proton domains', function (string $domain, bool $expec
     'subdomain' => ['mail.proton.me', false],
 ]);
 
-test('it removes the subaddress and keeps dots', function (string $localPart, string $expected): void {
+test('it removes the subaddress and the dots, underscores and hyphens', function (string $localPart, string $expected): void {
     expect(Canonical::email(new ProtonProvider(), $localPart . '@proton.me'))->toBe($expected . '@proton.me');
 })->with([
     'unchanged' => ['johndoe', 'johndoe'],
-    'dots are kept' => ['john.doe', 'john.doe'],
+    'dots' => ['john.doe', 'johndoe'],
+    'underscores' => ['john_doe', 'johndoe'],
+    'hyphens' => ['john-doe', 'johndoe'],
+    'all three' => ['j.o_h-n.doe', 'johndoe'],
     'subaddress' => ['johndoe+newsletter', 'johndoe'],
-    'dots and subaddress' => ['john.doe+newsletter', 'john.doe'],
+    'punctuation and subaddress' => ['john.doe_x+news.letter-x', 'johndoex'],
+    'uppercase' => ['John.Doe', 'johndoe'],
 ]);
 
 test('it keeps each domain and does not merge them', function (string $domain): void {
-    expect(Canonical::email(new ProtonProvider(), 'John.Doe+shopping@' . strtoupper($domain)))->toBe('john.doe@' . $domain);
+    expect(Canonical::email(new ProtonProvider(), 'John.Doe+shopping@' . strtoupper($domain)))->toBe('johndoe@' . $domain);
 })->with(['proton.me', 'protonmail.com', 'protonmail.ch', 'pm.me']);

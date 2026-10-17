@@ -15,7 +15,7 @@ function readmeExamples(): array
     return [
         'gmail: dots, tag and alias domain' => ['J.o.h.n.Doe+Shopping@GoogleMail.com', 'johndoe@gmail.com', 'gmail'],
         'outlook: tag, dots stay' => ['John.Doe+Shopping@outlook.com', 'john.doe@outlook.com', 'outlook'],
-        'proton: tag, dots stay' => ['John.Doe+Shopping@proton.me', 'john.doe@proton.me', 'proton'],
+        'proton: tag, dots, underscores and hyphens' => ['John.Doe_x-y+Shopping@proton.me', 'johndoexy@proton.me', 'proton'],
         'fastmail: subdomain addressing' => ['shopping@john.fastmail.com', 'john@fastmail.com', 'fastmail'],
         'fastmail: tag on another domain' => ['John+Shopping@fastmail.fm', 'john@fastmail.fm', 'fastmail'],
         'yandex: alias domain' => ['John.Doe+Shopping@yandex.ru', 'john.doe@yandex.com', 'yandex'],
